@@ -13,14 +13,22 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch("/api/aut", {
+      // Use environment variable for backend URL
+      const apiUrl = `${import.meta.env.VITE_API_URL}/aut`;
+
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      // Parse response JSON safely
-      const result = await response.json();
+      // Safely parse JSON
+      let result: any = {};
+      try {
+        result = await response.json();
+      } catch (jsonErr) {
+        console.warn("Backend returned no JSON");
+      }
 
       if (!response.ok) {
         setError(result.message || "Login failed");
@@ -47,17 +55,19 @@ const Login = () => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
-        /><br />
+        />
+        <br />
 
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
-        /><br />
+        />
+        <br />
 
         <button type="submit">Login</button>
 
