@@ -8,17 +8,18 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch("/api/aut.ts", {
+      const response = await fetch("/api/aut", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
+      // Parse response JSON safely
       const result = await response.json();
 
       if (!response.ok) {
@@ -34,15 +35,14 @@ const Login = () => {
     }
   };
 
-
   return (
     <div className="login-page">
       <form onSubmit={handleSubmit}>
         <h2>Login</h2>
-        
+
         {/* Error message */}
         {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
-        
+
         <input
           type="email"
           placeholder="Email"
@@ -50,6 +50,7 @@ const Login = () => {
           onChange={e => setEmail(e.target.value)}
           required
         /><br />
+
         <input
           type="password"
           placeholder="Password"
@@ -57,9 +58,9 @@ const Login = () => {
           onChange={e => setPassword(e.target.value)}
           required
         /><br />
+
         <button type="submit">Login</button>
 
-        {/* Sign Up prompt */}
         <p>
           Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
