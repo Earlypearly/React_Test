@@ -1,4 +1,4 @@
-// /api/auth.ts
+// /api/aut.ts
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 
@@ -10,57 +10,39 @@ const supabase = createClient(
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // --- CORS headers ---
-  // Replace "*" with your frontend URL for production: "https://react-test-virid-nu.vercel.app"
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", "https://react-test-virid-nu.vercel.app");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization"
-  );
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Replace "*" with frontend URL in production
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Handle preflight OPTIONS request
+  // Preflight request handling
   if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  // Only POST allowed for this endpoint
+  // Only POST allowed
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
   try {
-    const { email, password } = req.body;
-
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
-    }
-
-    // Query Supabase for user
     const { data, error } = await supabase
       .from("users")
       .select("*")
       .eq("email", email)
-      .eq("password", password) // ⚠️ Consider using proper password hashing (bcrypt)
+      .eq("password", password) // Only works if passwords are plain text
       .single();
 
     if (error || !data) {
-      console.error("Supabase error:", error);
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Success - return user data (excluding password)
-    return res.status(200).json({
-      message: "Login successful",
-      user: { 
-        id: data.id, 
-        email: data.email,
-        // Add other fields you need, but never send password back
-      }
-    });
-
+    return res.status(200).json({ message: "Login successful", user: data });
   } catch (err) {
     console.error("Unexpected error during login:", err);
     return res.status(500).json({ message: "Internal server error" });
