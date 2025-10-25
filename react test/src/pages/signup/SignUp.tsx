@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import "./SignUp.css";
 
 const SignUp = () => {
+  const [name, setName] = useState("");      // ← Add name state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,11 +15,14 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      // Updated API URL - using your new API
       const response = await fetch("https://react-api-pink.vercel.app/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          name,      // ← Send name
+          email, 
+          password 
+        }),
       });
 
       let result: any = {};
@@ -40,6 +44,7 @@ const SignUp = () => {
       alert("Sign-up successful! You can now log in.");
       
       // Clear form
+      setName("");
       setEmail("");
       setPassword("");
       
@@ -61,6 +66,16 @@ const SignUp = () => {
         <h2>Sign Up</h2>
         
         {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+        
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          disabled={loading}
+        />
+        <br />
         
         <input
           type="email"
