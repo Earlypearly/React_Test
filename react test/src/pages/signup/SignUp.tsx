@@ -5,10 +5,30 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Sign up attempted for: ${email}`);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.message || "Sign-up failed");
+        return;
+      }
+
+      alert("Sign-up successful! You can now log in.");
+    } catch (err) {
+      console.error("Error during sign-up:", err);
+      alert("Something went wrong. Please try again.");
+    }
   };
+
 
   return (
     <div className="signup-page">

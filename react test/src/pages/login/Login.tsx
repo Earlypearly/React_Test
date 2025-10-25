@@ -8,23 +8,32 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Hardcoded credentials (for now - replace with real auth later)
-  const VALID_EMAIL = "Earl@gmail.com";
-  const VALID_PASSWORD = "Earl123";
-
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
-    // Check credentials
-    if (email === VALID_EMAIL && password === VALID_PASSWORD) {
-      // Success - redirect to dashboard
+    try {
+      const response = await fetch("/api/aut", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.message || "Login failed");
+        return;
+      }
+
+      // Success → redirect to dashboard
       navigate("/dashboard");
-    } else {
-      // Failed - show error
-      setError("Invalid email or password");
+    } catch (err) {
+      console.error("Error during login:", err);
+      setError("Something went wrong. Please try again.");
     }
   };
+
 
   return (
     <div className="login-page">
