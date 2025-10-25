@@ -1,0 +1,101 @@
+/* SignUp.css - White & Red Theme (centered version) */
+
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(115deg, #ffe0e0 0%, #ffb3b3 100%);
+}
+
+/* ===== Form Panel ===== */
+.signup-page form {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 35px rgba(200, 50, 50, 0.25);
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  width: 360px;
+  animation: popin 0.4s cubic-bezier(.77, .01, .59, .99);
+  border: 2px solid #ff6b6b;
+}
+
+@keyframes popin {
+  0% {
+    transform: scale(0.93) translateY(15px);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.signup-page h2 {
+  text-align: center;
+  color: #d32f2f;
+  margin-bottom: 1.6rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* ===== Inputs ===== */
+.signup-page input[type="email"],
+.signup-page input[type="password"] {
+  width: 100%;
+  padding: 14px 16px;
+  margin: 0.8rem 0 1.2rem 0;
+  border: 2px solid #ffb3b3;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  background: #fff5f5;
+  color: #5b1a1a;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 3px 8px rgba(255, 100, 100, 0.1);
+}
+
+.signup-page input:focus {
+  border-color: #d32f2f;
+  outline: none;
+  background: #ffffff;
+  box-shadow: 0 0 12px rgba(211, 47, 47, 0.4);
+}
+
+/* ===== Button ===== */
+.signup-page button {
+  width: 100%;
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 6px;
+  box-shadow: 0 5px 14px rgba(211, 47, 47, 0.45);
+  transition: background 0.28s ease, transform 0.18s ease;
+}
+
+.signup-page button:hover,
+.signup-page button:focus {
+  background: #b71c1c;
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* ===== Label ===== */
+.signup-page form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #d32f2f;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .signup-page form {
+    width: 90vw;
+    padding: 1.5rem 1rem;
+  }
+}
