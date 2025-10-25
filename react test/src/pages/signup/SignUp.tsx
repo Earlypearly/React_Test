@@ -1,9 +1,10 @@
 // SignUp.tsx
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./SignUp.css";
 
 const SignUp = () => {
-  const [name, setName] = useState("");      // ← Add name state
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,11 +19,7 @@ const SignUp = () => {
       const response = await fetch("https://react-api-pink.vercel.app/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          name,      // ← Send name
-          email, 
-          password 
-        }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       let result: any = {};
@@ -58,24 +55,19 @@ const SignUp = () => {
 
   return (
     <div className="signup-page">
-      <h1 style={{ fontSize: "2.5rem", textAlign: "center", marginBottom: "2rem", color: "#333" }}>
-        [translate:Sign Up na Bisaya]
-      </h1>
-      
       <form onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
         
-        {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+        {error && <p style={{ color: "#d32f2f" }}>{error}</p>}
         
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           disabled={loading}
         />
-        <br />
         
         <input
           type="email"
@@ -85,7 +77,6 @@ const SignUp = () => {
           required
           disabled={loading}
         />
-        <br />
         
         <input
           type="password"
@@ -95,11 +86,14 @@ const SignUp = () => {
           required
           disabled={loading}
         />
-        <br />
         
         <button type="submit" disabled={loading}>
           {loading ? "Signing up..." : "Sign Up"}
         </button>
+        
+        <p>
+          Already have an account? <Link to="/login">Log In</Link>
+        </p>
       </form>
     </div>
   );
