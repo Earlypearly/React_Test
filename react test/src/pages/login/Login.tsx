@@ -1,4 +1,3 @@
-// Login.tsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
@@ -8,7 +7,75 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [nfcReading, setNfcReading] = useState(false);
   const navigate = useNavigate();
+
+  const nfcSupported = "NDEFReader" in window || "NFC" in window;
+
+  const handleNFCRead = async () => {
+    if (!("NDEFReader" in window)) {
+      setError("NFC is not supported on this device");
+      return;
+    }
+
+    setNfcReading(true);
+    setError("");
+
+    try {
+      const ndef = new (window as any).NDEFReader();
+      await ndef.scan();
+
+      ndef.onreading = async (event: any) => {
+        for (const record of event.message.records) {
+          const uid = event.serialNumber || 
+                      record.id || 
+                      Array.from(new Uint8Array(record.data))
+                        .map((x) => x.toString(16).padStart(2, "0"))
+                        .join("");
+          
+          if (uid) {
+            const nfcUid = uid.toUpperCase();
+            console.log("NFC UID read:", nfcUid);
+
+            try {
+              const response = await fetch(
+                "https://react-api-pink.vercel.app/api/nfc-lookup",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ nfc_uid: nfcUid }),
+                }
+              );
+
+              const result = await response.json();
+
+              if (response.ok) {
+                setEmail(result.email);
+                setError("");
+                console.log(`Welcome ${result.name}! Please enter your password.`);
+              } else {
+                setError(result.message || "NFC card not found");
+              }
+            } catch (err) {
+              console.error("Error looking up NFC:", err);
+              setError("Error reading NFC card");
+            }
+
+            setNfcReading(false);
+            break;
+          }
+        }
+      };
+
+      ndef.onreadingerror = () => {
+        setError("Unable to read NFC card. Try again.");
+        setNfcReading(false);
+      };
+    } catch (err: any) {
+      setError(`NFC Error: ${err.message}`);
+      setNfcReading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,8 +83,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Updated API URL - fixed the missing slashes and using your new API
-      const response = await fetch("https://react-api-pink.vercel.app/api/login/auth", {
+      const response = await fetch("https://react-api-pink.vercel.app/api/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,13 +107,8 @@ const Login = () => {
         return;
       }
 
-      // Store user data if needed
       localStorage.setItem("user", JSON.stringify(result.user));
-      navigate("/dashboard");
-      
       console.log("Login successful:", result);
-      
-      // Success → redirect
       navigate("/dashboard");
       
     } catch (err) {
@@ -62,8 +123,23 @@ const Login = () => {
     <div className="login-page">
       <form onSubmit={handleSubmit}>
         <h2>Login</h2>
-        {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+        {error && <p className="error-message">{error}</p>}
         
+        {/* NFC Section */}
+        {nfcSupported && (
+          <div className="nfc-section">
+            <button
+              type="button"
+              onClick={handleNFCRead}
+              disabled={loading || nfcReading}
+              className="nfc-button"
+            >
+              {nfcReading ? "📡 Scanning NFC Card..." : "📱 Scan NFC Card"}
+            </button>
+            <p className="nfc-hint">Tap your NFC card to auto-fill email</p>
+          </div>
+        )}
+
         <input
           type="email"
           placeholder="Email"
@@ -71,8 +147,8 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
           disabled={loading}
+          className="input-field"
         />
-        <br />
         
         <input
           type="password"
@@ -81,14 +157,18 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
           disabled={loading}
+          className="input-field"
         />
-        <br />
         
-        <button type="submit" disabled={loading}>
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="submit-button"
+        >
           {loading ? "Logging in..." : "Login"}
         </button>
         
-        <p>
+        <p className="signup-link">
           Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
       </form>

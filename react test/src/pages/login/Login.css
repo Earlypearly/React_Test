@@ -1,3 +1,4 @@
+/* ===== Login Page Layout ===== */
 .login-page body {
   margin: 0;
   background: linear-gradient(135deg, #f0f1f6 0%, #d6c7b0 100%);
@@ -19,22 +20,28 @@
   background: linear-gradient(135deg, #f0f1f6 0%, #d6c7b0 100%);
 }
 
-
-
+/* ===== Form Container ===== */
 .login-page form {
   background: #fffdfa;
   border-radius: 24px;
   box-shadow: 0 12px 40px rgba(100, 80, 50, 0.15);
   padding: 3rem 2.5rem 2.5rem 2.5rem;
   width: 360px;
-  animation: popin 0.45s cubic-bezier(.77,.01,.59,.99);
+  animation: popin 0.45s cubic-bezier(.77, .01, .59, .99);
 }
 
 @keyframes popin {
-  0%   { transform: scale(0.95) translateY(20px); opacity: 0; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
+  0% {
+    transform: scale(0.95) translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
+/* ===== Heading ===== */
 .login-page h2 {
   text-align: center;
   color: #a17c4d;
@@ -43,11 +50,19 @@
   font-weight: 600;
 }
 
-.login-page input[type="email"],
-.login-page input[type="password"] {
+/* ===== Error Message ===== */
+.error-message {
+  color: #d32f2f;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* ===== Input Fields ===== */
+.input-field {
   width: 100%;
   padding: 14px 16px;
-  margin: 0.8rem 0 1.2rem 0;
+  margin-bottom: 1.2rem;
   border: 1.5px solid #d0b38a;
   border-radius: 14px;
   font-size: 1.1rem;
@@ -55,16 +70,68 @@
   color: #4b3b2f;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
   box-shadow: 0 4px 10px rgba(180, 145, 90, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.login-page input:focus {
+.input-field:focus {
   border-color: #b68f5e;
   outline: none;
   background: #fffaf3;
   box-shadow: 0 0 12px rgba(182, 143, 94, 0.35);
 }
 
-.login-page button {
+.input-field:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* ===== NFC Section ===== */
+.nfc-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #fffaf3;
+  border-radius: 12px;
+  border: 2px solid #d0b38a;
+  text-align: center;
+}
+
+.nfc-button {
+  width: 100%;
+  background: #b68f5e;
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.3s ease, transform 0.18s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.nfc-button:hover:not(:disabled) {
+  background: #946b3f;
+  transform: translateY(-2px);
+}
+
+.nfc-button:disabled {
+  background: #d0b38a;
+  cursor: wait;
+}
+
+.nfc-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.nfc-hint {
+  font-size: 0.85rem;
+  color: #8b6a31;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* ===== Submit Button ===== */
+.submit-button {
   width: 100%;
   background: #b68f5e;
   color: #fff;
@@ -74,17 +141,28 @@
   cursor: pointer;
   font-size: 1.2rem;
   font-weight: 600;
-  margin-top: 6px;
+  margin-top: 0.5rem;
   box-shadow: 0 6px 16px rgba(182, 143, 94, 0.35);
   transition: background 0.3s ease, transform 0.18s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.login-page button:hover,
-.login-page button:focus {
+.submit-button:hover:not(:disabled) {
   background: #946b3f;
   transform: translateY(-2px) scale(1.02);
 }
 
+.submit-button:disabled {
+  background: #d0b38a;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0) scale(1);
+}
+
+/* ===== Form Label ===== */
 .login-page form label {
   display: block;
   margin-bottom: 0.5rem;
@@ -93,26 +171,49 @@
   font-weight: 500;
 }
 
-.login-page p {
+/* ===== Signup Link ===== */
+.signup-link {
   text-align: center;
   margin-top: 1rem;
   color: #8b6a31;
   font-weight: 500;
 }
 
-.login-page p a {
+.signup-link a {
   color: #946b3f;
   text-decoration: underline;
   font-weight: 600;
+  transition: color 0.2s ease;
 }
 
-.login-page p a:hover {
+.signup-link a:hover {
   color: #b68f5e;
 }
 
+/* ===== Responsive Design ===== */
 @media (max-width: 480px) {
-  form {
+  .login-page form {
     width: 90vw;
     padding: 2rem 1.5rem;
+  }
+
+  .login-page h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .submit-button {
+    font-size: 1rem;
+    padding: 0.9rem;
+  }
+
+  .nfc-section {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+  }
+
+  .nfc-button {
+    padding: 0.7rem;
+    font-size: 0.9rem;
   }
 }
