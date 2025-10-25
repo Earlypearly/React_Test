@@ -13,8 +13,7 @@ const Login = () => {
     setError("");
 
     try {
-      // Use environment variable for backend URL
-      const apiUrl = `${import.meta.env.VITE_API_URL}/aut`;
+
 
       const response = await fetch("https://react-test-mwaz.vercel.app/api/aut", {
         method: "POST",
