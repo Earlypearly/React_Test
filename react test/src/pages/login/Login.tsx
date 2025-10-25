@@ -83,7 +83,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://react-api-pink.vercel.app/api/auth", {
+      const response = await fetch("https://react-api-pink.vercel.app/api/login/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
