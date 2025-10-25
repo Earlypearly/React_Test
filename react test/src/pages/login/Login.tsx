@@ -16,8 +16,8 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Update with your API URL
-      const response = await fetch("https:react-test-ls94.vercel.app/api/auth", {
+      // Updated API URL - fixed the missing slashes and using your new API
+      const response = await fetch("https://react-api-pink.vercel.app/api/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,6 +43,8 @@ const Login = () => {
 
       // Store user data if needed
       localStorage.setItem("user", JSON.stringify(result.user));
+      
+      console.log("Login successful:", result);
       
       // Success → redirect
       navigate("/dashboard");
