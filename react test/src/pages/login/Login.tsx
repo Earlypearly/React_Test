@@ -17,7 +17,7 @@ const Login = () => {
 
     try {
       // Update with your API URL
-      const response = await fetch("https://react-test-ls94.vercel.app/api/auth", {
+      const response = await fetch("https:react-test-ls94.vercel.app/api/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
