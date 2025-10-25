@@ -10,7 +10,7 @@ const supabase = createClient(
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // --- CORS headers ---
-  res.setHeader("Access-Control-Allow-Origin", "*"); // Use your frontend URL in production
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Replace "*" with frontend URL in production
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .from("users")
       .select("*")
       .eq("email", email)
-      .eq("password", password)
+      .eq("password", password) // Only works if passwords are plain text
       .single();
 
     if (error || !data) {

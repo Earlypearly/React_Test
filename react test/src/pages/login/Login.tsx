@@ -13,20 +13,17 @@ const Login = () => {
     setError("");
 
     try {
-
-
       const response = await fetch("https://react-test-mwaz.vercel.app/api/aut", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-
       // Safely parse JSON
       let result: any = {};
       try {
         result = await response.json();
-      } catch (jsonErr) {
+      } catch {
         console.warn("Backend returned no JSON");
       }
 
@@ -35,7 +32,7 @@ const Login = () => {
         return;
       }
 
-      // Success → redirect to dashboard
+      // Success → redirect
       navigate("/dashboard");
     } catch (err) {
       console.error("Error during login:", err);
@@ -48,7 +45,6 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <h2>Login</h2>
 
-        {/* Error message */}
         {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
 
         <input
