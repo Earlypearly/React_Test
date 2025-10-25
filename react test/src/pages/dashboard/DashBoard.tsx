@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import "./Dashboard.css";
+import { useState, useEffect } from "react";
+import "./DashBoard.css";
 
 const Dashboard = () => {
   const [temp, setTemp] = useState<number | null>(null);
