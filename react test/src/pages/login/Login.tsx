@@ -17,7 +17,7 @@ const Login = () => {
 
     try {
       // Updated API URL - fixed the missing slashes and using your new API
-      const response = await fetch("https://react-api-pink.vercel.app/api/auth", {
+      const response = await fetch("https://react-api-pink.vercel.app/api/login/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
