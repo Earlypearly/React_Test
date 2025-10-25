@@ -16,7 +16,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Update the URL to match your API deployment
+      // Update with your API URL
       const response = await fetch("https://react-test-ls94.vercel.app/api/auth", {
         method: "POST",
         headers: {
@@ -31,11 +31,13 @@ const Login = () => {
       } catch (jsonError) {
         console.warn("Backend returned no JSON:", jsonError);
         setError("Invalid response from server");
+        setLoading(false);
         return;
       }
 
       if (!response.ok) {
         setError(result.message || `Error: ${response.status}`);
+        setLoading(false);
         return;
       }
 
