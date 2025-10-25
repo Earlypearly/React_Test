@@ -43,6 +43,7 @@ const Login = () => {
 
       // Store user data if needed
       localStorage.setItem("user", JSON.stringify(result.user));
+      navigate("/dashboard");
       
       console.log("Login successful:", result);
       
