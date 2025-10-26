@@ -17,10 +17,18 @@ const Dashboard = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch("https://react-api-pink.vercel.app/api/temp");
+        const response = await fetch(
+        `https://react-api-pink.vercel.app/api/temp?userId=${user?.id}`
+        );
         const data = await response.json();
-        setTemp(data.temp);
-        setHumidity(data.humidity);
+
+        if (response.ok && data) {
+          setTemp(data.temperature);
+          setHumidity(data.humidity);
+        } else {
+          console.error("Failed to fetch temperature:", data);
+        }
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
