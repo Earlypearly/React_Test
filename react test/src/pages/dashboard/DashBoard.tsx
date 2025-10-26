@@ -8,36 +8,35 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Get user info from localStorage
+    useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
-      setUser(JSON.parse(userData));
-    }
+      const parsed = JSON.parse(userData);
+      setUser(parsed);
 
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-        `https://react-api-pink.vercel.app/api/temp?userId=${user?.id}`
-        );
-        const data = await response.json();
-
-        if (response.ok && data) {
-          setTemp(data.temperature);
-          setHumidity(data.humidity);
-        } else {
-          console.error("Failed to fetch temperature:", data);
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `https://react-api-pink.vercel.app/api/temp?userId=${parsed.userId}`
+          );
+          const data = await response.json();
+          if (response.ok && data) {
+            setTemp(data.temperature);
+            setHumidity(data.humidity);
+          } else {
+            console.error("Failed to fetch temperature:", data);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
+      };
 
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-    const interval = setInterval(fetchData, 5000);
-    return () => clearInterval(interval);
+      fetchData();
+      const interval = setInterval(fetchData, 5000);
+      return () => clearInterval(interval);
+    }
   }, []);
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
