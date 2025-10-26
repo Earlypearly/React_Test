@@ -1,4 +1,4 @@
-/* Dashboard.css - Improved Horizontal Layout */
+/* DashBoard.css - Modern Beige & Brown Theme */
 
 * {
   margin: 0;
@@ -6,239 +6,205 @@
   box-sizing: border-box;
 }
 
-.dashboard-page {
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f1f0 0%, #e8dcc8 100%);
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f1f6 0%, #d6c7b0 100%);
-  display: flex;
-  flex-direction: column;
 }
 
-/* ===== Header ===== */
-.dashboard-header {
-  background: #fffdfa;
-  border-bottom: 3px solid #d0b38a;
-  padding: 1rem 2rem;
-  box-shadow: 0 4px 12px rgba(100, 80, 50, 0.1);
+.dashboard-page {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f1f0 0%, #e8dcc8 100%);
 }
 
-.dashboard-header h1 {
-  color: #a17c4d;
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-.header-user {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.user-name {
-  color: #8b6a31;
-  font-size: 1rem;
-}
-
-/* ===== Main Container ===== */
 .dashboard-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-}
-
-.dashboard-content {
-  background: #fffdfa;
-  border-radius: 20px;
-  box-shadow: 0 12px 40px rgba(100, 80, 50, 0.15);
-  padding: 2.5rem;
-  max-width: 900px;
+  background: #fefdfb;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(139, 100, 60, 0.15);
+  padding: 3rem;
+  max-width: 600px;
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-}
-
-/* ===== Cards (Horizontal Layout) ===== */
-.temp-card,
-.humidity-card {
-  background: linear-gradient(135deg, #fff9f5 0%, #fff5f0 100%);
-  border-radius: 16px;
-  padding: 2rem;
-  border: 2px solid #d0b38a;
-  transition: all 0.3s ease;
   text-align: center;
+  animation: slideUp 0.5s ease-out;
+  border: 1px solid rgba(179, 150, 120, 0.2);
 }
 
-.temp-card:hover,
-.humidity-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(182, 143, 94, 0.2);
-  border-color: #b68f5e;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ===== Icons & Values ===== */
-.temp-icon,
-.humidity-icon {
+.dashboard-container h1 {
+  color: #a17c4d;
   font-size: 2.5rem;
-  margin-bottom: 0.8rem;
-}
-
-.temp-value,
-.humidity-value {
-  font-size: 2.2rem;
-  color: #b68f5e;
+  margin-bottom: 0.5rem;
   font-weight: 700;
-  margin: 0.5rem 0;
+  letter-spacing: -0.5px;
 }
 
-.temp-label,
-.humidity-label {
-  color: #a17c4d;
+.dashboard-container > p {
+  color: #b89968;
   font-size: 0.95rem;
-  margin-top: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  margin-bottom: 2.5rem;
+  font-weight: 500;
 }
 
-/* ===== Status Info ===== */
-.status-section {
-  background: #fff5f0;
-  border-radius: 16px;
-  padding: 1.5rem;
-  border: 2px solid #d0b38a;
-  grid-column: 1 / -1;
-}
-
-.status-section h3 {
-  color: #a17c4d;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.status-grid {
+/* Data Cards */
+.data-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 1.5rem;
+  margin: 2rem 0 3rem 0;
 }
 
-.status-item {
-  background: #fffdfa;
-  padding: 1rem;
-  border-radius: 12px;
-  border-left: 4px solid #b68f5e;
-}
-
-.status-label {
-  color: #8b6a31;
-  font-size: 0.85rem;
-  margin-bottom: 0.3rem;
-}
-
-.status-value {
-  color: #b68f5e;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-/* ===== Button Container ===== */
-.button-container {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.logout-btn {
-  background: #b68f5e;
+.card {
+  background: linear-gradient(135deg, #d9c7b0 0%, #c9b59a 100%);
+  border-radius: 18px;
+  padding: 2rem 1.5rem;
   color: #fff;
+  box-shadow: 0 10px 30px rgba(139, 100, 60, 0.2);
+  transition: all 0.3s ease;
+  cursor: default;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 45px rgba(139, 100, 60, 0.3);
+  background: linear-gradient(135deg, #e0d0bf 0%, #d0bea9 100%);
+}
+
+.card h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.card .value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  display: block;
+  margin: 0.5rem 0;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Buttons */
+.logout-button {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #b68f5e 0%, #a17c4d 100%);
+  color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  font-size: 0.95rem;
+  border-radius: 14px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  flex: 1;
-  max-width: 200px;
+  box-shadow: 0 8px 20px rgba(139, 100, 60, 0.2);
+  width: 100%;
+  letter-spacing: 0.5px;
 }
 
-.logout-btn:hover {
-  background: #946b3f;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(182, 143, 94, 0.35);
+.logout-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(139, 100, 60, 0.35);
+  background: linear-gradient(135deg, #c9a070 0%, #b89968 100%);
 }
 
-.logout-btn:active {
-  transform: translateY(0);
+.logout-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(139, 100, 60, 0.25);
 }
 
-/* ===== Responsive Design ===== */
+/* Responsive Design */
 @media (max-width: 768px) {
-  .dashboard-content {
+  .dashboard-container {
+    padding: 2rem;
+    border-radius: 20px;
+  }
+
+  .dashboard-container h1 {
+    font-size: 2rem;
+  }
+
+  .data-cards {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1.2rem;
+  }
+
+  .card {
     padding: 1.5rem;
+    border-radius: 16px;
   }
 
-  .dashboard-header {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+  .card .value {
+    font-size: 2rem;
   }
 
-  .dashboard-header h1 {
-    font-size: 1.4rem;
-  }
-
-  .temp-value,
-  .humidity-value {
-    font-size: 1.8rem;
-  }
-
-  .button-container {
-    flex-direction: column;
-  }
-
-  .logout-btn {
-    max-width: 100%;
+  .logout-button {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
   }
 }
 
 @media (max-width: 480px) {
+  .dashboard-page {
+    padding: 1rem;
+  }
+
   .dashboard-container {
-    padding: 1rem;
+    padding: 1.5rem;
+    border-radius: 18px;
   }
 
-  .dashboard-content {
-    grid-template-columns: 1fr;
-    padding: 1rem;
+  .dashboard-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
   }
 
-  .dashboard-header {
-    padding: 1rem;
+  .dashboard-container > p {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
   }
 
-  .dashboard-header h1 {
-    font-size: 1.2rem;
+  .data-cards {
+    gap: 1rem;
+    margin: 1.5rem 0 2rem 0;
   }
 
-  .temp-icon,
-  .humidity-icon {
-    font-size: 2rem;
+  .card {
+    padding: 1.2rem 1rem;
+    border-radius: 14px;
   }
 
-  .temp-value,
-  .humidity-value {
+  .card h3 {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+  .card .value {
     font-size: 1.6rem;
   }
 
-  .status-grid {
-    grid-template-columns: 1fr;
+  .logout-button {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    margin-top: 1.5rem;
   }
 }
