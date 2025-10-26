@@ -1,99 +1,67 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./DashBoard.css";
+import "./Dashboard.css";
 
 const Dashboard = () => {
   const [temp, setTemp] = useState<number | null>(null);
   const [humidity, setHumidity] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const userId = user.id;
-
-    if (!userId) {
-      console.error("User not logged in");
-      navigate("/login");
-      return;
+    // Get user info from localStorage
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
     }
 
-    const interval = setInterval(async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
-          `https://react-api-pink.vercel.app/api/temp?userId=${userId}`
-        );
+        const response = await fetch("https://react-api-pink.vercel.app/api/temp");
         const data = await response.json();
-        
-        if (data.temperature !== undefined) {
-          setTemp(data.temperature);
-          setHumidity(data.humidity);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Error fetching temperature:", err);
+        setTemp(data.temp);
+        setHumidity(data.humidity);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    }, 3000);
+    };
 
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
-  }, [navigate]);
+  }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
   return (
     <div className="dashboard-page">
-      {/* Header */}
-      <div className="dashboard-header">
-        <h1>🌡️ Temperature Monitor</h1>
-        <div className="header-user">
-          <span className="user-name">👤 {user.name || "User"}</span>
-          <button onClick={handleLogout} className="logout-btn" style={{ maxWidth: "120px" }}>
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
       <div className="dashboard-container">
-        <div className="dashboard-content">
-          {/* Temperature Card */}
-          <div className="temp-card">
-            <div className="temp-icon">🌡️</div>
-            <div className="temp-value">
-              {loading ? "Loading..." : `${temp?.toFixed(1)}°C`}
-            </div>
-            <div className="temp-label">Temperature</div>
+        <h1>Dashboard</h1>
+        {user && <p>Welcome, {user.name}!</p>}
+        
+        <div className="data-cards">
+          <div className="card">
+            <h3>Temperature</h3>
+            <p className="value">
+              {temp !== null ? `${temp.toFixed(1)}°C` : "Loading..."}
+            </p>
           </div>
-
-          {/* Humidity Card */}
-          <div className="humidity-card">
-            <div className="humidity-icon">💧</div>
-            <div className="humidity-value">
-              {loading ? "Loading..." : `${humidity?.toFixed(1)}%`}
-            </div>
-            <div className="humidity-label">Humidity</div>
-          </div>
-
-          {/* Status Section */}
-          <div className="status-section">
-            <h3>System Status</h3>
-            <div className="status-grid">
-              <div className="status-item">
-                <div className="status-label">Connection</div>
-                <div className="status-value">✅ Connected</div>
-              </div>
-              <div className="status-item">
-                <div className="status-label">Last Update</div>
-                <div className="status-value">Just now</div>
-              </div>
-            </div>
+          
+          <div className="card">
+            <h3>Humidity</h3>
+            <p className="value">
+              {humidity !== null ? `${humidity.toFixed(1)}%` : "Loading..."}
+            </p>
           </div>
         </div>
+
+        <button onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
       </div>
     </div>
   );

@@ -83,7 +83,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://react-api-pink.vercel.app/api/login/auth", {
+      const response = await fetch("https://react-api-pink.vercel.app/api/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,15 +91,7 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      let result: any = {};
-      try {
-        result = await response.json();
-      } catch (jsonError) {
-        console.warn("Backend returned no JSON:", jsonError);
-        setError("Invalid response from server");
-        setLoading(false);
-        return;
-      }
+      const result = await response.json();
 
       if (!response.ok) {
         setError(result.message || `Error: ${response.status}`);
@@ -107,8 +99,11 @@ const Login = () => {
         return;
       }
 
+      // ===== STORE JWT TOKEN =====
+      localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
-      console.log("Login successful:", result);
+      
+      console.log("Login successful with JWT token");
       navigate("/dashboard");
       
     } catch (err) {
