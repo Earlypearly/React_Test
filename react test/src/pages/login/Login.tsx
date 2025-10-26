@@ -27,12 +27,13 @@ const Login = () => {
 
       ndef.onreading = async (event: any) => {
         for (const record of event.message.records) {
-          const uid = event.serialNumber || 
-                      record.id || 
-                      Array.from(new Uint8Array(record.data))
-                        .map((x) => x.toString(16).padStart(2, "0"))
-                        .join("");
-          
+          const uid =
+            event.serialNumber ||
+            record.id ||
+            Array.from(new Uint8Array(record.data))
+              .map((x) => x.toString(16).padStart(2, "0"))
+              .join("");
+
           if (uid) {
             const nfcUid = uid.toUpperCase();
             console.log("NFC UID read:", nfcUid);
@@ -83,13 +84,14 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://react-api-pink.vercel.app/api/login/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "https://react-api-pink.vercel.app/api/login/auth",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const result = await response.json();
 
@@ -99,13 +101,16 @@ const Login = () => {
         return;
       }
 
-      // ===== STORE JWT TOKEN =====
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("user", JSON.stringify(result.user));
-      
-      console.log("Login successful with JWT token");
-      navigate("/dashboard");
-      
+      // ✅ ===== Store JWT token safely =====
+      if (result.token) {
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("user", JSON.stringify(result.user));
+        console.log("Login successful with JWT token:", result.token);
+        navigate("/dashboard");
+      } else {
+        console.error("No token received from server");
+        setError("Login failed: No token received from server.");
+      }
     } catch (err) {
       console.error("Error during login:", err);
       setError("Network error. Please try again.");
@@ -119,7 +124,7 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <h2>Login</h2>
         {error && <p className="error-message">{error}</p>}
-        
+
         {/* NFC Section */}
         {nfcSupported && (
           <div className="nfc-section">
@@ -144,7 +149,7 @@ const Login = () => {
           disabled={loading}
           className="input-field"
         />
-        
+
         <input
           type="password"
           placeholder="Password"
@@ -154,15 +159,11 @@ const Login = () => {
           disabled={loading}
           className="input-field"
         />
-        
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="submit-button"
-        >
+
+        <button type="submit" disabled={loading} className="submit-button">
           {loading ? "Logging in..." : "Login"}
         </button>
-        
+
         <p className="signup-link">
           Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
