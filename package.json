@@ -19,9 +19,11 @@
   "homepage": "https://github.com/Earlypearly/React_Test#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.76.1",
-    "@vercel/node": "^5.5.0"
+    "@vercel/node": "^2.3.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.9.1"
   }
 }
