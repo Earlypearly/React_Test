@@ -61,7 +61,7 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://react-api-pink.vercel.app/api/signup", {
+      const response = await fetch("https://react-test-api-psi.vercel.app/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
