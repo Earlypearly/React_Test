@@ -85,7 +85,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "https://react-test-dtwl.vercel.app/api/login/auth",
+        "https://react-test-api-psi.vercel.app/api/login/auth",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
