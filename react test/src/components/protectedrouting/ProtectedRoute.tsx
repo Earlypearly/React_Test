@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       }
 
       try {
-        const response = await fetch("https://react-api-pink.vercel.app/api/verify_token/verifytoken", {
+        const response = await fetch("https://react-test-dtwl.vercel.app/api/verify_token/verifytoken", {
           method: "GET",
           headers: { 
             "Authorization": `Bearer ${token}`,
