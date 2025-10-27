@@ -1,8 +1,8 @@
+// /api/auth.ts
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import * as jwt from "jsonwebtoken";
 
-// Initialize Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -10,25 +10,23 @@ const supabase = createClient(
 
 const JWT_SECRET = process.env.JWT_SECRET || "nakatagong key";
 
-// ✅ Define your frontend origin (must match exactly)
-const allowedOrigin = "https://react-test-virid-nu.vercel.app";
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // ✅ Set CORS headers for every response
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  // ===== CORS HEADERS - ADD THESE =====
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE, PATCH");
+  res.setHeader("Access-Control-Allow-Origin", "https://react-test-virid-nu.vercel.app");
+  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With, Accept, X-CSRF-Token"
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization"
   );
 
-  // ✅ Respond immediately to preflight OPTIONS
+  // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
-  // ✅ Only allow POST for login
+  // Only POST allowed
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -36,14 +34,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { email, password } = req.body;
 
-    // 🧩 Validate input
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
     }
 
-    // 🔍 Look up user by email and password
-    // ⚠️ NOTE: Plaintext password check — safe only for testing.
-    // In production, use bcrypt to compare hashed passwords.
+    // Find user
     const { data, error } = await supabase
       .from("users")
       .select("*")
@@ -60,29 +55,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // 🪪 Generate JWT token
-    const token = jwt.sign(
+    const token  = jwt.sign(
       {
         userId: data.id,
         email: data.email,
-        name: data.name,
+        name: data.name
       },
       JWT_SECRET,
-      { expiresIn: "2m" }
+      {expiresIn: '2m'}
     );
 
-    // ✅ Return success
     return res.status(200).json({
-      message: "Login successful",
-      token,
-      user: {
-        userId: data.id,
-        email: data.email,
-        name: data.name,
-        nfc_uid: data.nfc_uid,
-      },
-    });
-  } catch (err) {
+    message: "Login successful",
+    token, // 👈 send the token to the frontend
+    user: {
+      userId: data.id,
+      email: data.email,
+      name: data.name,
+      nfc_uid: data.nfc_uid
+    }
+  });
+
+  } catch (err: any) {
     console.error("Error:", err);
     return res.status(500).json({ message: "Internal server error" });
   }
