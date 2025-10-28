@@ -1,6 +1,10 @@
 services:
   - type: web
-    name: react-test-api
+    name: my-api-service
     env: node
-    buildCommand: npm install
+    rootDir: .
+    buildCommand: npm install && npm run build
     startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18
