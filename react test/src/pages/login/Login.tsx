@@ -85,7 +85,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "https://react-test-i1mf.onrender.com/api/login/auth",
+        "https://react-test-i1mf.onrender.com/api/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
