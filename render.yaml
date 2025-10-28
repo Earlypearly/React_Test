@@ -2,8 +2,5 @@ services:
   - type: web
     name: react-test-api
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm install
     startCommand: npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
