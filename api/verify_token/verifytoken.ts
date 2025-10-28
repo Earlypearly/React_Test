@@ -4,7 +4,7 @@ import * as jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET || "nakatagong key";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader("Access-Control-Allow-Origin", "https://react-test-virid-nu.vercel.app");
+  res.setHeader("Access-Control-Allow-Origin", "https://react-test-frontend.onrender.com");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 

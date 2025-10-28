@@ -40,7 +40,7 @@ const Login = () => {
 
             try {
               const response = await fetch(
-                "https://react-test-api-psi.vercel.app/api/nfc-lookup",
+                "https://react-test-i1mf.onrender.com/api/nfc-lookup",
                 {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -85,7 +85,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "https://react-test-api-psi.vercel.app/api/login/auth",
+        "https://react-test-i1mf.onrender.com/api/login/auth",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
