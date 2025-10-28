@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       }
 
       try {
-        const response = await fetch("https://react-test-api-psi.vercel.app/api/verify_token/verifytoken", {
+        const response = await fetch("https://react-test-i1mf.onrender.com/api/verify_token", {
           method: "GET",
           headers: { 
             "Authorization": `Bearer ${token}`,

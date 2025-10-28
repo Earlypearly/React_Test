@@ -19,7 +19,7 @@ const Dashboard = () => {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            `https://react-test-i1mf.onrender.com/temp?userId=${parsed.userId}`
+            `https://react-test-i1mf.onrender.com/api/temp?userId=${parsed.userId}`
           );
           const data = await response.json();
           if (response.ok && data) {
