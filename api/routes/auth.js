@@ -10,51 +10,53 @@ const JWT_SECRET = process.env.JWT_SECRET || "nakatagong key";
 
 const authRoutes = (app) => {
   // LOGIN ROUTE
-  app.post('/api/auth/login', async (req, res) => {
-    try {
-      const { email, password } = req.body;
+  // POST NFC scan from ESP32 storing latest scan
+app.post('/api/nfc-scan', async (req, res) => {
+  try {
+    const { nfc_uid } = req.body;
+    if (!nfc_uid) return res.status(400).json({ message: "NFC UID required" });
 
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password required" });
-      }
+    const { data: user, error: userError } = await supabase
+      .from("users")
+      .select("email, name")
+      .eq("nfc_uid", nfc_uid)
+      .maybeSingle();
 
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email)
-        .eq("password", password)
-        .maybeSingle();
+    if (userError) return res.status(500).json({ message: "Database error" });
+    if (!user) return res.status(404).json({ message: "NFC card not registered" });
 
-      if (error) {
-        console.error("Database error:", error);
-        return res.status(500).json({ message: "Database error" });
-      }
+    // Upsert latest scan (id = 1 fixed row)
+    const { error: upsertError } = await supabase
+      .from("latest_nfc_scan")
+      .upsert({ id: 1, nfc_uid, email: user.email, name: user.name, scanned_at: new Date() });
 
-      if (!data) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
+    if (upsertError) return res.status(500).json({ message: "Error saving latest scan" });
 
-      const token = jwt.sign({
-        userId: data.id,
-        email: data.email,
-        name: data.name,
-      }, JWT_SECRET, { expiresIn: '2m' });
+    return res.status(200).json({ message: "Scan recorded", user });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
-      return res.status(200).json({
-        message: "Login successful",
-        token,
-        user: {
-          userId: data.id,
-          email: data.email,
-          name: data.name,
-          nfc_uid: data.nfc_uid,
-        }
-      });
-    } catch (err) {
-      console.error("Internal error:", err);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
+// GET latest NFC scan for frontend polling
+app.get('/api/latest-nfc-scan', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("latest_nfc_scan")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (error) return res.status(500).json({ message: "Database error" });
+    if (!data) return res.status(404).json({ message: "No NFC scan found" });
+
+    res.status(200).json(data);
+  } catch {
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
   // SIGNUP ROUTE
   app.post('/api/signup', async (req, res) => {
