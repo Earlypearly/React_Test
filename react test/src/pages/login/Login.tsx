@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
+const POLL_INTERVAL_MS = 3000;
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,73 +14,90 @@ const Login = () => {
 
   const nfcSupported = "NDEFReader" in window || "NFC" in window;
 
-  // Auto-start NFC scan on component mount
   useEffect(() => {
-    if (!nfcSupported) {
-      setError("NFC is not supported on this device.");
+  const pollLatestNfcScan = async () => {
+    try {
+      const res = await fetch("https://react-test-i1mf.onrender.com/api/latest-nfc-scan");
+      if (!res.ok) {
+        setError("No NFC card scanned yet");
+        return;
+      }
+      const data = await res.json();
+      if (data.email && data.email !== email) {
+        console.log("Setting email from backend scan:", data.email);
+        setEmail(data.email);
+        setError("");
+      }
+    } catch (err) {
+      setError("Error fetching latest NFC scan");
+    }
+  };
+
+  const intervalId = setInterval(pollLatestNfcScan, POLL_INTERVAL_MS);
+  pollLatestNfcScan();
+
+  return () => clearInterval(intervalId);
+}, []);
+
+
+  // Web NFC scan secondary option
+  const handleNFCRead = async () => {
+    if (!("NDEFReader" in window)) {
+      setError("NFC is not supported on this device");
       return;
     }
+    setNfcReading(true);
+    setError("");
 
-    const startNfcScan = async () => {
-      try {
-        setNfcReading(true);
-        setError("");
-        const ndef = new (window as any).NDEFReader();
-        await ndef.scan();
+    try {
+      const ndef = new (window as any).NDEFReader();
+      await ndef.scan();
 
-        ndef.onreading = async (event: any) => {
-          for (const record of event.message.records) {
-            const uid =
-              event.serialNumber ||
-              record.id ||
-              Array.from(new Uint8Array(record.data))
-                .map((x) => x.toString(16).padStart(2, "0"))
-                .join("");
+      ndef.onreading = async (event: any) => {
+        for (const record of event.message.records) {
+          const uid =
+            event.serialNumber ||
+            record.id ||
+            Array.from(new Uint8Array(record.data))
+              .map((x) => x.toString(16).padStart(2, "0"))
+              .join("");
 
-            if (uid) {
-              const nfcUid = uid.toUpperCase();
-              console.log("NFC UID read:", nfcUid);
+          if (uid) {
+            const nfcUid = uid.toUpperCase();
+            console.log("NFC UID read:", nfcUid);
 
-              try {
-                const response = await fetch("https://react-test-i1mf.onrender.com/api/nfc-lookup", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ nfc_uid: nfcUid }),
-                });
-                const result = await response.json();
+            try {
+              const response = await fetch("https://react-test-i1mf.onrender.com/api/nfc-lookup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nfc_uid: nfcUid }),
+              });
+              const result = await response.json();
 
-                if (response.ok) {
-                  setEmail(result.email);
-                  setError("");
-                } else {
-                  setError(result.message || "NFC card not found");
-                }
-              } catch (err) {
-                console.error("Error looking up NFC:", err);
-                setError("Error reading NFC card");
+              if (response.ok) {
+                setEmail(result.email);
+                setError("");
+              } else {
+                setError(result.message || "NFC card not found");
               }
-
-              setNfcReading(false);
-              break;
+            } catch {
+              setError("Error reading NFC card");
             }
+            setNfcReading(false);
+            break;
           }
-        };
+        }
+      };
 
-        ndef.onreadingerror = () => {
-          setError("Unable to read NFC card. Try again.");
-          setNfcReading(false);
-        };
-      } catch (err: any) {
-        setError(`NFC Error: ${err.message}`);
+      ndef.onreadingerror = () => {
+        setError("Unable to read NFC card. Try again.");
         setNfcReading(false);
-      }
-    };
-
-    startNfcScan();
-
-    // Optional: cleanup function to stop scanning on unmount if API allows
-
-  }, [nfcSupported]);
+      };
+    } catch (err: any) {
+      setError(`NFC Error: ${err.message}`);
+      setNfcReading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,15 +110,12 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const result = await response.json();
-
       if (!response.ok) {
         setError(result.message || `Error: ${response.status}`);
         setLoading(false);
         return;
       }
-
       if (result.token) {
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", JSON.stringify(result.user));
@@ -107,7 +123,7 @@ const Login = () => {
       } else {
         setError("Login failed: No token received");
       }
-    } catch (err) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -120,8 +136,19 @@ const Login = () => {
         <h2>Login</h2>
         {error && <p className="error-message">{error}</p>}
 
-        {/* Optional: show scanning status */}
-        {nfcReading && <p className="nfc-status">📡 Scanning NFC card...</p>}
+        {nfcSupported && (
+          <div className="nfc-section">
+            <button
+              type="button"
+              onClick={handleNFCRead}
+              disabled={loading || nfcReading}
+              className="nfc-button"
+            >
+              {nfcReading ? "📡 Scanning NFC Card..." : "📱 Scan NFC Card"}
+            </button>
+            <p className="nfc-hint">Or tap your NFC card on the ESP32 device to autofill</p>
+          </div>
+        )}
 
         <input
           type="email"
