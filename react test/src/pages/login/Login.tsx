@@ -17,6 +17,7 @@ const Login = () => {
       setError("NFC is not supported on this device");
       return;
     }
+
     setNfcReading(true);
     setError("");
 
@@ -43,10 +44,13 @@ const Login = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nfc_uid: nfcUid }),
               });
+
               const result = await response.json();
+
               if (response.ok) {
-                setEmail(result.email);
+                setEmail(result.email);  // Autofill email field here
                 setError("");
+                console.log(`Welcome ${result.name}! Please enter your password.`);
               } else {
                 setError(result.message || "NFC card not found");
               }
@@ -56,6 +60,7 @@ const Login = () => {
             }
 
             setNfcReading(false);
+            // Stop after first successful UID process
             break;
           }
         }
@@ -73,6 +78,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setError("");
     setLoading(true);
 
@@ -82,12 +88,15 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+
       const result = await response.json();
+
       if (!response.ok) {
         setError(result.message || `Error: ${response.status}`);
         setLoading(false);
         return;
       }
+
       if (result.token) {
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", JSON.stringify(result.user));
@@ -106,15 +115,16 @@ const Login = () => {
     <div className="login-page">
       <form onSubmit={handleSubmit}>
         <h2>Login</h2>
+
         {error && <p className="error-message">{error}</p>}
 
         {nfcSupported && (
           <div className="nfc-section">
             <button
               type="button"
+              className="nfc-button"
               onClick={handleNFCRead}
               disabled={loading || nfcReading}
-              className="nfc-button"
             >
               {nfcReading ? "📡 Scanning NFC Card..." : "📱 Scan NFC Card"}
             </button>
