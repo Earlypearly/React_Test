@@ -101,7 +101,6 @@ const Login = () => {
         return;
       }
 
-      // ✅ ===== Store JWT token safely =====
       if (result.token) {
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", JSON.stringify(result.user));
@@ -125,7 +124,6 @@ const Login = () => {
         <h2>Login</h2>
         {error && <p className="error-message">{error}</p>}
 
-        {/* NFC Section */}
         {nfcSupported && (
           <div className="nfc-section">
             <button
