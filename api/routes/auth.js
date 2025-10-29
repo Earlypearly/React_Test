@@ -9,7 +9,7 @@ const supabase = createClient(
 const JWT_SECRET = process.env.JWT_SECRET || "nakatagong key";
 
 const authRoutes = (app) => {
-  // ===== LOGIN ROUTE =====
+  // LOGIN ROUTE
   app.post('/api/auth/login', async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -34,15 +34,11 @@ const authRoutes = (app) => {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      const token = jwt.sign(
-        {
-          userId: data.id,
-          email: data.email,
-          name: data.name
-        },
-        JWT_SECRET,
-        { expiresIn: '2m' }
-      );
+      const token = jwt.sign({
+        userId: data.id,
+        email: data.email,
+        name: data.name,
+      }, JWT_SECRET, { expiresIn: '2m' });
 
       return res.status(200).json({
         message: "Login successful",
@@ -51,51 +47,49 @@ const authRoutes = (app) => {
           userId: data.id,
           email: data.email,
           name: data.name,
-          nfc_uid: data.nfc_uid
+          nfc_uid: data.nfc_uid,
         }
       });
-
     } catch (err) {
-      console.error("Error:", err);
-      return res.status(500).json({ message: "Internal server error" });
+      console.error("Internal error:", err);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  // ===== SIGNUP ROUTE =====
+  // SIGNUP ROUTE
   app.post('/api/signup', async (req, res) => {
     try {
       const { name, email, password, nfc_uid } = req.body;
 
       if (!name || !email || !password) {
-        return res.status(400).json({ message: "Name, email, and password are required" });
+        return res.status(400).json({ message: "Name, email, and password required" });
       }
 
-      const { data: existingUser, error: checkError } = await supabase
+      const { data: existingUser, error: userCheckErr } = await supabase
         .from("users")
         .select("*")
         .eq("email", email)
         .maybeSingle();
 
-      if (checkError) {
-        console.error("Error checking user:", checkError);
+      if (userCheckErr) {
+        console.error("User check error:", userCheckErr);
         return res.status(500).json({ message: "Database error" });
       }
-
       if (existingUser) {
         return res.status(400).json({ message: "Email already registered" });
       }
 
       if (nfc_uid) {
-        const { data: existingNfc, error: nfcCheckError } = await supabase
+        const { data: existingNfc, error: nfcCheckErr } = await supabase
           .from("users")
           .select("*")
           .eq("nfc_uid", nfc_uid)
           .maybeSingle();
 
-        if (nfcCheckError) {
-          console.error("NFC check error:", nfcCheckError);
+        if (nfcCheckErr) {
+          console.error("NFC UID check error:", nfcCheckErr);
+          return res.status(500).json({ message: "Database error" });
         }
-
         if (existingNfc) {
           return res.status(400).json({ message: "NFC card already registered" });
         }
@@ -103,37 +97,26 @@ const authRoutes = (app) => {
 
       const { data, error } = await supabase
         .from("users")
-        .insert([{ 
-          name, 
-          email, 
-          password,
-          nfc_uid: nfc_uid || null
-        }])
+        .insert([{ name, email, password, nfc_uid: nfc_uid || null }])
         .select()
         .single();
 
       if (error) {
-        console.error("Supabase error:", error);
+        console.error("Supabase insert error:", error);
         return res.status(500).json({ message: "Error creating account" });
       }
 
-      return res.status(201).json({
+      res.status(201).json({
         message: "Sign-up successful",
-        user: { 
-          id: data.id, 
-          name: data.name, 
-          email: data.email,
-          nfc_uid: data.nfc_uid
-        }
+        user: data,
       });
-
     } catch (err) {
       console.error("Unexpected error:", err);
-      return res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  // ===== NFC LOOKUP ROUTE =====
+  // NFC LOOKUP ROUTE
   app.post('/api/nfc-lookup', async (req, res) => {
     try {
       const { nfc_uid } = req.body;
@@ -149,7 +132,7 @@ const authRoutes = (app) => {
         .maybeSingle();
 
       if (error) {
-        console.error("Error looking up NFC:", error);
+        console.error("NFC lookup error:", error);
         return res.status(500).json({ message: "Database error" });
       }
 
@@ -157,18 +140,14 @@ const authRoutes = (app) => {
         return res.status(404).json({ message: "NFC card not registered" });
       }
 
-      return res.status(200).json({
-        email: data.email,
-        name: data.name
-      });
-
+      res.status(200).json({ email: data.email, name: data.name });
     } catch (err) {
-      console.error("Error:", err);
-      return res.status(500).json({ message: "Internal server error" });
+      console.error("Internal error:", err);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  // ===== TOKEN VERIFICATION ROUTE =====
+  // TOKEN VERIFICATION ROUTE
   app.get('/api/verify_token', (req, res) => {
     const auth = req.headers['authorization'];
     if (!auth) return res.status(401).json({ valid: false, message: "No token provided" });

@@ -17,7 +17,6 @@ const Login = () => {
       setError("NFC is not supported on this device");
       return;
     }
-
     setNfcReading(true);
     setError("");
 
@@ -39,21 +38,15 @@ const Login = () => {
             console.log("NFC UID read:", nfcUid);
 
             try {
-              const response = await fetch(
-                "https://react-test-i1mf.onrender.com/api/nfc-lookup",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ nfc_uid: nfcUid }),
-                }
-              );
-
+              const response = await fetch("https://react-test-i1mf.onrender.com/api/nfc-lookup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nfc_uid: nfcUid }),
+              });
               const result = await response.json();
-
               if (response.ok) {
                 setEmail(result.email);
                 setError("");
-                console.log(`Welcome ${result.name}! Please enter your password.`);
               } else {
                 setError(result.message || "NFC card not found");
               }
@@ -84,34 +77,25 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "https://react-test-i1mf.onrender.com/api/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
+      const response = await fetch("https://react-test-i1mf.onrender.com/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
       const result = await response.json();
-
       if (!response.ok) {
         setError(result.message || `Error: ${response.status}`);
         setLoading(false);
         return;
       }
-
       if (result.token) {
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", JSON.stringify(result.user));
-        console.log("Login successful with JWT token:", result.token);
         navigate("/dashboard");
       } else {
-        console.error("No token received from server");
-        setError("Login failed: No token received from server.");
+        setError("Login failed: No token received");
       }
     } catch (err) {
-      console.error("Error during login:", err);
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
