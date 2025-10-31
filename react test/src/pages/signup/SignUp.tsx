@@ -10,8 +10,8 @@ const SignUp = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [nfcReading, setNfcReading] = useState(false);
-  
-  // Check if NFC is supported (removed setNfcSupported)
+
+  // Check if NFC is supported
   const nfcSupported = "NDEFReader" in window || "NFC" in window;
 
   // NFC Reading Function
@@ -30,12 +30,13 @@ const SignUp = () => {
 
       ndef.onreading = (event: any) => {
         for (const record of event.message.records) {
-          const uid = event.serialNumber || 
-                      record.id || 
-                      Array.from(new Uint8Array(record.data))
-                        .map((x) => x.toString(16).padStart(2, "0"))
-                        .join("");
-          
+          const uid =
+            event.serialNumber ||
+            record.id ||
+            Array.from(new Uint8Array(record.data))
+              .map((x) => x.toString(16).padStart(2, "0"))
+              .join("");
+
           if (uid) {
             setNfcUid(uid.toUpperCase());
             setNfcReading(false);
@@ -55,6 +56,7 @@ const SignUp = () => {
     }
   };
 
+  // Form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -64,11 +66,11 @@ const SignUp = () => {
       const response = await fetch("https://react-test-i1mf.onrender.com/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          name, 
-          email, 
+        body: JSON.stringify({
+          name,
+          email,
           password,
-          nfc_uid: nfcUid || null
+          nfc_uid: nfcUid || null,
         }),
       });
 
@@ -89,12 +91,11 @@ const SignUp = () => {
       }
 
       alert("Sign-up successful! You can now log in.");
-      
+
       setName("");
       setEmail("");
       setPassword("");
       setNfcUid("");
-      
     } catch (err) {
       console.error("Error during sign-up:", err);
       setError("Something went wrong. Please try again.");
@@ -107,9 +108,9 @@ const SignUp = () => {
     <div className="signup-page">
       <form onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
-        
+
         {error && <p style={{ color: "#d32f2f" }}>{error}</p>}
-        
+
         <input
           type="text"
           placeholder="Full Name"
@@ -118,7 +119,7 @@ const SignUp = () => {
           required
           disabled={loading}
         />
-        
+
         <input
           type="email"
           placeholder="Email"
@@ -127,7 +128,7 @@ const SignUp = () => {
           required
           disabled={loading}
         />
-        
+
         <input
           type="password"
           placeholder="Password"
@@ -137,13 +138,26 @@ const SignUp = () => {
           disabled={loading}
         />
 
-        {/* NFC Section */}
         {nfcSupported && (
-          <div style={{ marginTop: "1rem", padding: "1rem", background: "#fff5f0", borderRadius: "8px" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", color: "#a17c4d", fontWeight: "600" }}>
+          <div
+            style={{
+              marginTop: "1rem",
+              padding: "1rem",
+              background: "#fff5f0",
+              borderRadius: "8px",
+            }}
+          >
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#a17c4d",
+                fontWeight: "600",
+              }}
+            >
               📱 NFC Card (Optional)
             </label>
-            
+
             <input
               type="text"
               placeholder="NFC UID (auto-filled or manual)"
@@ -156,10 +170,10 @@ const SignUp = () => {
                 marginBottom: "0.5rem",
                 border: "1.5px solid #d0b38a",
                 borderRadius: "8px",
-                background: "#fffdf8"
+                background: "#fffdf8",
               }}
             />
-            
+
             <button
               type="button"
               onClick={handleNFCRead}
@@ -173,14 +187,20 @@ const SignUp = () => {
                 borderRadius: "8px",
                 cursor: nfcReading ? "wait" : "pointer",
                 fontWeight: "600",
-                transition: "background 0.3s"
+                transition: "background 0.3s",
               }}
             >
               {nfcReading ? "📡 Reading NFC..." : "📱 Read NFC Card"}
             </button>
 
             {nfcUid && (
-              <p style={{ marginTop: "0.5rem", color: "#46a049", fontSize: "0.9rem" }}>
+              <p
+                style={{
+                  marginTop: "0.5rem",
+                  color: "#46a049",
+                  fontSize: "0.9rem",
+                }}
+              >
                 ✅ NFC UID: {nfcUid}
               </p>
             )}
@@ -192,11 +212,15 @@ const SignUp = () => {
             ℹ️ NFC not supported on this device (Desktop/older phones)
           </p>
         )}
-        
-        <button type="submit" disabled={loading} style={{ marginTop: nfcSupported ? "1rem" : "0" }}>
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ marginTop: nfcSupported ? "1rem" : "0" }}
+        >
           {loading ? "Signing up..." : "Sign Up"}
         </button>
-        
+
         <p>
           Already have an account? <Link to="/login">Log In</Link>
         </p>
